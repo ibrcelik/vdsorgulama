@@ -307,8 +307,20 @@
         // --- Initialization ---
         // Sayfa yüklendiğinde çalışacaklar
         document.addEventListener('DOMContentLoaded', () => {
-            // İlçe listesini hazırla
-            const ilceler = [...new Set(vergiData.map(d => d.ilce).filter(Boolean))].sort(collator.compare);
+            // İlçe listesini özel sırayla hazırla
+            const ilceSiralama = ['NİLÜFER', 'OSMANGAZİ', 'YILDIRIM', 'KESTEL', 'GÜRSU'];
+            const tumIlceler = [...new Set(vergiData.map(d => d.ilce).filter(Boolean))];
+            const ilceler = tumIlceler.sort((a, b) => {
+                const aName = a.replace(/^BURSA\s*-\s*/i, '');
+                const bName = b.replace(/^BURSA\s*-\s*/i, '');
+                const aIdx = ilceSiralama.indexOf(aName);
+                const bIdx = ilceSiralama.indexOf(bName);
+                // Listede olmayan ilçeler sona
+                if (aIdx === -1 && bIdx === -1) return collator.compare(a, b);
+                if (aIdx === -1) return 1;
+                if (bIdx === -1) return -1;
+                return aIdx - bIdx;
+            });
 
             // "BURSA - NİLÜFER" -> "NİLÜFER" şeklinde göster
             const ilceDisplayFn = (val) => val.replace(/^BURSA\s*-\s*/i, '');
